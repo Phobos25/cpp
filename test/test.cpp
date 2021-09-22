@@ -27,44 +27,17 @@ vector<Group<String>> GroupHeavyStrings(vector<String> strings) {
   set<char> s;
   map<set<char>, int> group;
 
-  for (const auto& c: strings[0]){
-    if (s.count(c) == 0){
-      s.insert(c);
+  for (const auto& word:strings){
+    s.clear();
+    for (const auto& letter:word){
+      if (s.count(letter) == 0){
+        s.insert(letter);
+      }
     }
-  }
-  group[s] = 1;
-
-  s.clear();
-  for (const auto& c: strings[1]){
-    if (s.count(c) == 0){
-      s.insert(c);
-    }
-  }
-
-  if (group.count(s) == 0){
-    group[s] = 1;
-  } else {
-    ++group[s];
-  }
-
-  s.clear();
-  for (const auto& c: strings[2]){
-    if (s.count(c) == 0){
-      s.insert(c);
-    }
-  }
-
-  if (group.count(s) == 0){
-    group[s] = 1;
-  } else {
     ++group[s];
   }
   
-  cout << group.size();
-  // for (auto c: s) {
-  //   cout << c << ' ';
-  // }
-  // cout << '\n';
+  cout << group.size();  
 
   vector<Group<String>> result;
   return result;
@@ -72,7 +45,7 @@ vector<Group<String>> GroupHeavyStrings(vector<String> strings) {
 }
 
 int main (){
-  vector<string> strings = {"caab", "abc", "cccc", "bacc", "c"};
+  vector<string> strings = {"caab", "abc", "cccc", "bacc", "c", "d", "cba"};
   auto groups = GroupHeavyStrings(strings);
   return 0;
 }
