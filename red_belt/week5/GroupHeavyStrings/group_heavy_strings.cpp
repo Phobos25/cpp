@@ -30,7 +30,7 @@ vector<Group<String>> GroupHeavyStrings(vector<String> strings) {
       s.insert(c);
     }
   }
-  
+  // test test test
   // использовав не более 1 копирования каждого символа
 }
 
