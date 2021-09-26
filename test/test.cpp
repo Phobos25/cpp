@@ -22,6 +22,7 @@ template <typename String>
 using Char = typename String::value_type;
 
 template <typename String>
+<<<<<<< HEAD
 using Key = String;
 
 template <typename String>
@@ -43,17 +44,33 @@ vector<Group<String>> GroupHeavyStrings(vector<String> strings) {
     groups.push_back(move(group));
   }
   return groups;
+=======
+vector<Group<String>> GroupHeavyStrings(vector<String> strings) {
+  // Напишите реализацию функции,
+  set<char> s;
+  map<set<char>, int> group;
+
+  for (const auto& word:strings){
+    s.clear();
+    for (const auto& letter:word){
+      if (s.count(letter) == 0){
+        s.insert(letter);
+      }
+    }
+    ++group[s];
+  }
+  
+  cout << group.size();  
+
+  vector<Group<String>> result;
+  return result;
+  // использовав не более 1 копирования каждого символа
+>>>>>>> parent of 38dc16c... trying heavy strings
 }
 
 int main (){
   vector<string> strings = {"caab", "abc", "cccc", "bacc", "c", "d", "cba"};
   auto groups = GroupHeavyStrings(strings);
-  for (auto vec:groups){
-    for (auto v:vec){
-      cout << v << ' ';
-    }
-    cout << endl;
-  }
   return 0;
 }
 
