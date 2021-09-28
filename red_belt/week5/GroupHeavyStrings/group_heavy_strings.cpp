@@ -22,6 +22,7 @@ using Char = typename String::value_type;
 
 // Объявляем еще один шаблон, для удобства
 template <typename String>
+<<<<<<< HEAD
 using Key = String;
 
 // данную шаблонную функцию мы используем вместо
@@ -32,6 +33,27 @@ Key<String> ComputeStringKey(const String& string){
   sort (begin(chars), end(chars));
   chars.erase((begin(chars), end(chars)), end(chars));
   return chars;
+=======
+vector<Group<String>> GroupHeavyStrings(vector<String> strings) {  
+  // Напишите реализацию функции,
+  set<char> s;
+  map<set<char>, int> group;
+
+  for (const auto& word:strings){
+    s.clear();
+    for (const auto& letter:word){
+      if (s.count(letter) == 0){
+        s.insert(letter);
+      }
+    }
+    ++group[s];
+  }
+  
+  cout << group.size();  
+
+  vector<Group<String>> result;
+  return result;
+>>>>>>> a5e036e5abacbffa6397e2f47cda2fdd771fadc1
 }
 
 template <typename String>
