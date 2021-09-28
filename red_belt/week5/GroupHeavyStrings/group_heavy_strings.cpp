@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-#include <set>
 
 using namespace std;
 
@@ -21,19 +20,32 @@ using Group = vector<String>;
 template <typename String>
 using Char = typename String::value_type;
 
+// Объявляем еще один шаблон, для удобства
 template <typename String>
-vector<Group<String>> GroupHeavyStrings(vector<String> strings) {
-  // Напишите реализацию функции,
-  set<String> s;
-  for (const auto& c: strings[0]){
-    if (s.count(c) == 0){
-      s.insert(c);
-    }
-  }
-  // test test test
-  // использовав не более 1 копирования каждого символа
+using Key = String;
+
+// данную шаблонную функцию мы используем вместо
+// множества, чтобы не было повторов и было отсортировано
+template <typename String>
+Key<String> ComputeStringKey(const String& string){
+  String chars = string;
+  sort (begin(chars), end(chars));
+  chars.erase((begin(chars), end(chars)), end(chars));
+  return chars;
 }
 
+template <typename String>
+vector<Group<String>> GroupHeavyStrings(vector<String> strings) {  
+  map<Key<String>, Group<String>> groups_map;
+  for (String& string: strings){
+    groups_map[ComputeStringKey(string)].push_back(move(string));
+  }
+  vector<Group<String>> groups;
+  for (auto& [key, group] : groups_map){
+    groups.push_back(move(group));
+  }
+  return groups;
+}
 
 void TestGroupingABC() {
   vector<string> strings = {"caab", "abc", "cccc", "bacc", "c"};
