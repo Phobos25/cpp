@@ -62,11 +62,15 @@ T& SimpleVector<T>::operator[](size_t index) {
 
 template <typename T>
 void SimpleVector<T>::operator=(const SimpleVector<T>& other){
-  data = new T[other.capacity];
-  size = other.size;
-  capacity = other.capacity;
-  end_ = other.data + other.size;
-  copy(other.begin(), other.end(), begin());
+  if (other.size <= capacity){
+    copy (other.begin(), other.end(), begin());
+    size = other.size;
+  } else {
+    SimpleVector<T> tmp(other);
+    swap(tmp.data, data);
+    swap(tmp.size, size);
+    swap(tmp.capacity, capacity);
+  }
 }
 
 template <typename T>
