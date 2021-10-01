@@ -26,7 +26,6 @@ public:
 
 private:
   T* data = nullptr;
-  T* end_ = nullptr;
   size_t size = 0;
   size_t capacity = 0;
 };
@@ -36,7 +35,6 @@ SimpleVector<T>::SimpleVector(size_t size)
   : data(new T[size])
   , size(size)
   , capacity(size)
-  , end_(data+size)
 {
 }
 
@@ -45,7 +43,6 @@ SimpleVector<T>::SimpleVector(const SimpleVector& other)
   : data(new T[other.capacity])
   , size(other.size)
   , capacity(other.capacity)
-  , end_(other.data + other.size)
 {
   copy(other.begin(), other.end(), begin());
 }
@@ -113,5 +110,5 @@ const T* SimpleVector<T>::begin() const{
 
 template<typename T>
 const T* SimpleVector<T>::end() const{
-  return end_;
+  return data + size;
 }
