@@ -65,6 +65,7 @@
         "xhash": "cpp",
         "forward_list": "cpp",
         "random": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "array": "cpp"
     }
 }
