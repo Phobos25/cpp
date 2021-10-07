@@ -16,7 +16,19 @@ using Sentence = vector<Token>;
 template <typename Token>
 vector<Sentence<Token>> SplitIntoSentences(vector<Token> tokens) {
   // Напишите реализацию функции, не копируя объекты типа Token
+  vector<Sentence<Token>> sentences;
+  Sentence<Token> sentence;
   
+  for (auto it = tokens.begin(); it != tokens.end()){
+    if (it->IsEndSentencePunctuation()){
+      sentences.push_back(move(*it));
+      sentences.push_back(move(sentence));
+      ++it;      
+    } else {
+      sentence.push_back(move(*it));
+      ++it;
+    }    
+  }
 }
 
 
