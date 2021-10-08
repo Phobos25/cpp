@@ -18,17 +18,33 @@ vector<Sentence<Token>> SplitIntoSentences(vector<Token> tokens) {
   // Напишите реализацию функции, не копируя объекты типа Token
   vector<Sentence<Token>> sentences;
   Sentence<Token> sentence;
-  
-  for (auto it = tokens.begin(); it != tokens.end()){
+
+  for (auto it = tokens.begin();it != tokens.end();){
+//    cout << *it << endl;
     if (it->IsEndSentencePunctuation()){
-      sentences.push_back(move(*it));
+      // add a token to the sentence
+      sentence.push_back(move(*it));
+      do {
+        sentence.push_back(move(token));
+        ++it;
+      } while ((it->IsEndSentencePunctuation() != false)
+               ||  (it != tokens.end()))
+      // end sentence
       sentences.push_back(move(sentence));
-      ++it;      
+      if (it != tokens.end()){
+        ++it;
+      } else {
+        break;
+      }
     } else {
       sentence.push_back(move(*it));
       ++it;
-    }    
+    }
   }
+  if (!sentence.empty()){
+    sentences.push_back(move(sentence));
+  }
+  return sentences;
 }
 
 
