@@ -14,37 +14,32 @@ using Sentence = vector<Token>;
 
 // Класс Token имеет метод bool IsEndSentencePunctuation() const
 template <typename Token>
-vector<Sentence<Token>> SplitIntoSentences(vector<Token> tokens) {
-  // Напишите реализацию функции, не копируя объекты типа Token
-  vector<Sentence<Token>> sentences;
+vector<Sentence<Token>> SplitIntoSentences(vector<Token> tokens) {  
+  vector<Sentence<Token>> text;  
   Sentence<Token> sentence;
 
   for (auto it = tokens.begin();it != tokens.end();){
-//    cout << *it << endl;
-    if (it->IsEndSentencePunctuation()){
-      // add a token to the sentence
-      sentence.push_back(move(*it));
+    // если предложение заканчивается знаком препинания
+    if (it->IsEndSentencePunctuation()){      
+      // цикл do while проходит хотя бы 1 раз
       do {
-        sentence.push_back(move(token));
+        sentence.push_back(move(*it));
         ++it;
-      } while ((it->IsEndSentencePunctuation() != false)
-               ||  (it != tokens.end()))
-      // end sentence
-      sentences.push_back(move(sentence));
-      if (it != tokens.end()){
-        ++it;
-      } else {
-        break;
-      }
-    } else {
+      } while (it->IsEndSentencePunctuation()
+               &&  it != tokens.end());
+      // записываем предложение в вектор векторов
+      text.push_back(move(sentence));      
+    } else {//предложение еще не закончилось
       sentence.push_back(move(*it));
       ++it;
     }
   }
+  // если предложение закончилось без знака препинания. Проверяем наш вектор,
+  // пустой или нет
   if (!sentence.empty()){
-    sentences.push_back(move(sentence));
+    text.push_back(move(sentence));
   }
-  return sentences;
+  return text;
 }
 
 
@@ -89,6 +84,7 @@ void TestSplitting() {
         {{"Without"}, {"copies"}, {".", true}},
     })
   );
+
 }
 
 int main() {
