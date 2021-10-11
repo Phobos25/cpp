@@ -6,17 +6,21 @@
 #include <set>
 #include <utility>
 #include <vector>
+#include <map>
 
 using namespace std;
 
 template <typename T>
 class PriorityCollection {
 public:
-  using Id = /* тип, используемый для идентификаторов */;
+  using Id = int;/* тип, используемый для идентификаторов */
 
   // Добавить объект с нулевым приоритетом
   // с помощью перемещения и вернуть его идентификатор
-  Id Add(T object);
+  Id Add(T object) {    
+    data[id] = move(object);
+    priority[id] = 0;        
+  };
 
   // Добавить все элементы диапазона [range_begin, range_end)
   // с помощью перемещения, записав выданные им идентификаторы
@@ -27,21 +31,41 @@ public:
 
   // Определить, принадлежит ли идентификатор какому-либо
   // хранящемуся в контейнере объекту
-  bool IsValid(Id id) const;
+  bool IsValid(Id id) const {
+    if (data.count(id) != 0){
+      return true;
+    } else {
+      return false;
+    }
+  }
+  // из-за того, что я использую словарь, тут все элекментарно
+  // просто смотрим count по id
 
   // Получить объект по идентификатору
-  const T& Get(Id id) const;
+  const T& Get(Id id) const{
+    return data[id];
+    // по идее, я же могу испортить данные, которые получил через get
+    // тогда и другой контейнер тоже должен исключить этот id
+  }   
 
   // Увеличить приоритет объекта на 1
-  void Promote(Id id);
+  void Promote(Id id){
+    ++priority[id];
+  }  
 
   // Получить объект с максимальным приоритетом и его приоритет
   pair<const T&, int> GetMax() const;
+  // тут по сложнее. мне надо найти объект с максимальным приоритет
+  // следовательно надо искать по приортитету, который у меня является
+  // значением. поэтому придется итерироваться по всему диапазон
+  // тут будет линейная сложность 10^6. но это не так уж и много
 
   // Аналогично GetMax, но удаляет элемент из контейнера
   pair<T, int> PopMax();
 
 private:
+  map<Id, T> data;
+  map<Id, int> priority;
   // Приватные поля и методы
 };
 
