@@ -16,38 +16,25 @@
 
 using namespace std;
 
-template <typename T>
-void Print(const T& container){
-  for (const auto item: container){
-    cout << item << " ";
-  }
-}
-
 vector<deque<string>> AllConstruct(string target, vector<string> wordBank){
   if (target == ""){
     return {};
   }
   vector<deque<string>> result;
-  for (auto& word: wordBank){    
+  for (auto& word: wordBank){
     if (target.find(word) == 0){
-      auto suffix = target.substr(word.length());      
-      auto suffixWays = AllConstruct(suffix, wordBank);      
+      auto suffix = target.substr(word.length());
+      auto suffixWays = AllConstruct(suffix, wordBank);
       for (auto& way:suffixWays){
         way.push_front(word);
       }
-      if (suffixWays.empty()){
-        suffixWays.push_back(deque<string> {word});
-      }
-      for (size_t i = 0; i< suffixWays.size(); ++i){        
-        result.push_back(move(suffixWays[i]));
-      }
-      // move(suffixWays.begin(), suffixWays.end(),result.begin());
+      move(suffixWays.begin(), suffixWays.end(),result.begin());
     }
   }
   return result;
 }
 
-int main(){        
+int main(){
     auto result =  AllConstruct("purple", vector<string>{"purp", "p", "ur", "le", "purpl"});
     cout << result.size() << endl;
     for (const auto& v:result){
