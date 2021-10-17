@@ -16,34 +16,50 @@
 
 using namespace std;
 
+
 vector<deque<string>> AllConstruct(string target, vector<string> wordBank){
   if (target == ""){
-    return {};
+    return {{}};
   }
   vector<deque<string>> result;
-  for (auto& word: wordBank){
+  for (auto& word: wordBank){    
     if (target.find(word) == 0){
-      auto suffix = target.substr(word.length());
-      auto suffixWays = AllConstruct(suffix, wordBank);
+      auto suffix = target.substr(word.length());      
+      auto suffixWays = AllConstruct(suffix, wordBank);      
       for (auto& way:suffixWays){
         way.push_front(word);
       }
-      move(suffixWays.begin(), suffixWays.end(),result.begin());
+      if (!suffixWays.empty()){
+        for (size_t i = 0; i< suffixWays.size(); ++i){        
+           result.push_back(move(suffixWays[i]));
+        }
+      }      
     }
   }
   return result;
 }
 
-int main(){
-    auto result =  AllConstruct("purple", vector<string>{"purp", "p", "ur", "le", "purpl"});
-    cout << result.size() << endl;
-    for (const auto& v:result){
-        for (const auto& it:v){
+void PrintResult(const vector<deque<string>>& container) {
+  cout << container.size() << endl;
+  for (const auto& v:container){
+      for (const auto& it:v){
         cout << it << " ";
-        }
-        cout << endl;
-    }
-    cout << "end program" << endl;
+      }
+      cout << endl;
+  }    
+}
 
+int main(){
+    auto result1 = AllConstruct("purple", vector<string>{"purp", "p", "ur", "le", "purpl"});
+    PrintResult(result1);
+
+    auto result2 = AllConstruct("abcdef", vector<string>{"ab", "abc", "cd", "def", "abcd", "ef", "c"});
+    PrintResult(result2);
+
+    auto result3 = AllConstruct("skateboard", vector<string>{"bo", "rd", "ate", "t", "ska", "sk", "boar"});
+    PrintResult(result3);
+
+    auto result4 = AllConstruct("aaaaaaaaaaaaaaaaz", vector<string>{"a", "aa", "aaa", "aaaa", "aaaaa"});
+    PrintResult(result4);
     return 0;
 }
