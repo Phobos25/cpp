@@ -7,6 +7,9 @@
 // represent one combination that constructs the 'target'.
 
 //  you may reuse elements of 'wordBank' as many times as needed
+
+// One distinctive difference of this problem is it doesn't benefit from meoization
+// since it still needs to return all possible combination. 
 #include <iostream>
 #include <deque>
 #include <vector>
@@ -16,8 +19,23 @@
 
 using namespace std;
 
+// AllConstruct
+// m = target.length
+// n = wordBank.length
+
+// brute force
+// O(n^m) time complexity
+// O(m) space complexity
+
+// memoized
+// O(n^m) time complexity
+// O(m) space complexity
 
 vector<deque<string>> AllConstruct(string target, vector<string> wordBank){
+  static map<string, vector<deque<string>>> memo;
+  if (memo.find(target) != memo.end()){
+    return memo[target];
+  }
   if (target == ""){
     return {{}};
   }
@@ -29,15 +47,16 @@ vector<deque<string>> AllConstruct(string target, vector<string> wordBank){
       for (auto& way:suffixWays){
         way.push_front(word);
       }
-      if (!suffixWays.empty()){
-        for (size_t i = 0; i< suffixWays.size(); ++i){        
-           result.push_back(move(suffixWays[i]));
-        }
-      }      
+      
+      for (size_t i = 0; i< suffixWays.size(); ++i){        
+          result.push_back(move(suffixWays[i]));
+      }
+
     }
   }
+  memo[target] = result;
   return result;
-}
+} 
 
 void PrintResult(const vector<deque<string>>& container) {
   cout << container.size() << endl;
