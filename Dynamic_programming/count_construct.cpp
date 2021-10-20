@@ -1,7 +1,7 @@
 // Write a function 'countConstruct(target, wordBank' that 
 // accpets a target string an an array of __cpp_raw_strings
 
-// The function should return the nubmer of ways that the 'target'
+// The function should return the number of ways that the 'target'
 // can be constructed by concatenating elemenst of the 'wordBank' array
 
 // You may reuse elements of 'wordBank' as many times as needed

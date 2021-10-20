@@ -1,62 +1,61 @@
-// Write a function 'AllConstruct(target, wordBank)' that accepts
-// a target string and an array of strings.
+// Write a function 'hoSum(targetSum, numbers)' that takes in a 
+// targetSum and an array of numbers as arguments
 
-// The function should return a 2D array containing all of the ways
-// that the 'target' can be constructed by concatenating elements of
-// of the 'wordBank' array. Each element of the 2D array should 
-// represent one combination that constructs the 'target'.
+// The function should return an array containing any combination of
+// elements that add up to exactly the targetSum
 
-//  you may reuse elements of 'wordBank' as many times as needed
+// if there is no combination that adds up to the targetSum, then
+// return null
+
+// if there are multiple combinations possible, you may return any 
+// single one
 #include <iostream>
-#include <deque>
 #include <vector>
-#include <map>
-#include <string>
-#include <algorithm>
 
 using namespace std;
 
-template <typename T>
-void Print(const T& container){
-  for (const auto item: container){
-    cout << item << " ";
-  }
-}
-
-vector<deque<string>> AllConstruct(string target, vector<string> wordBank){
-  if (target == ""){
-    return {};
-  }
-  vector<deque<string>> result;
-  for (auto& word: wordBank){    
-    if (target.find(word) == 0){
-      auto suffix = target.substr(word.length());      
-      auto suffixWays = AllConstruct(suffix, wordBank);      
-      for (auto& way:suffixWays){
-        way.push_front(word);
-      }
-      if (suffixWays.empty()){
-        suffixWays.push_back(deque<string> {word});
-      }
-      for (size_t i = 0; i< suffixWays.size(); ++i){        
-        result.push_back(move(suffixWays[i]));
-      }
-      // move(suffixWays.begin(), suffixWays.end(),result.begin());
-    }
-  }
-  return result;
-}
-
-int main(){        
-    auto result =  AllConstruct("purple", vector<string>{"purp", "p", "ur", "le", "purpl"});
-    cout << result.size() << endl;
-    for (const auto& v:result){
-        for (const auto& it:v){
-        cout << it << " ";
+// O(m^2*n) time
+// O(m^2) space
+vector<int> HowSum(int targetSum, vector<int> numbers){
+    vector<vector<int>> table (
+        targetSum+1, 
+        vector<int>{INT16_MIN});
+    table[0] = {{}};
+    for (int i=0; i<=targetSum; ++i){
+        if (table[i][0] != INT16_MIN){
+            for (auto& num:numbers){
+                if ((i + num) <= targetSum){                    
+                    if (i == 0){
+                        table[i+num].clear();
+                    } else {
+                        table[i+num] = table[i];
+                    }                   
+                    table[i+num].push_back(num);
+                }                
+            }
         }
-        cout << endl;
     }
-    cout << "end program" << endl;
 
-    return 0;
+    return table[targetSum];
+}
+
+template <typename T>
+void PrintContainer(T container) {
+  for (auto it: container){
+      cout << it << " ";
+  }
+}
+
+int main() {
+    auto result1 = HowSum(7, {2,3});
+    PrintContainer(result1);
+    cout << endl;
+    // int targetSum = 7;
+    // vector<vector<int>> table (
+    //       targetSum+1, 
+    //       vector<int>{INT16_MIN});   
+    // table[0] = {{}};    
+    // cout << table[0].size() << endl;
+    // cout << table[0][0] << endl;
+    // return 0;
 }
