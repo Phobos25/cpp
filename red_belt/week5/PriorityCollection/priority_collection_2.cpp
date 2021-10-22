@@ -17,9 +17,11 @@ public:
 
   // Добавить объект с нулевым приоритетом
   // с помощью перемещения и вернуть его идентификатор
-  Id Add(T object) {    
-    data[id] = move(object);
-    priority[id] = 0;        
+  Id Add(T object) {        
+    data[id_] = move(object);
+    priority[id_] = 0;
+    prior_item[0].push_back(id_);
+    ++id_;
   };
 
   // Добавить все элементы диапазона [range_begin, range_end)
@@ -50,11 +52,19 @@ public:
 
   // Увеличить приоритет объекта на 1
   void Promote(Id id){
+    auto id_to_promote = find(prior_item[priority[id]].begin(),
+                              prior_item[priority[id]].end(),
+                              id);
+    prior_item[priority[id]+1].push_back(*id_to_promote);
+    prior_item[priority[id]].erase(id_to_promote);      
     ++priority[id];
   }  
 
   // Получить объект с максимальным приоритетом и его приоритет
-  pair<const T&, int> GetMax() const;  
+  pair<const T&, int> GetMax() const{
+    int id = prior_item[*prior_item.rbegin()].back();    
+    return make_pair(data[id], id);
+  }  
   // тут по сложнее. мне надо найти объект с максимальным приоритет
   // следовательно надо искать по приортитету, который у меня является
   // значением. поэтому придется итерироваться по всему диапазон
@@ -66,9 +76,11 @@ public:
 private:
   map<Id, T> data;
   map<Id, int> priority;
+  map<int, vector<Id>> prior_item;
+  Id id_ = 0;
   // Приватные поля и методы
   // я ведь могу создать еще один контейнер в котором буду хранить приоритеты
-  // можно что-то ттипа map<int, vector<id>>, тогда я могу при увеличении приоритета
+  // можно что-то типа map<int, vector<id>>, тогда я могу при увеличении приоритета
   // добавить в вектор элемент по номеру id, конечно удаление объекта из вектора не очень
   // оптимально, но не линейная сложность
 };
