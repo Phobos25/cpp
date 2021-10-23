@@ -17,11 +17,11 @@ public:
 
   // Добавить объект с нулевым приоритетом
   // с помощью перемещения и вернуть его идентификатор
-  Id Add(T object) {        
+  Id Add(T object) {
     data[id_] = move(object);
     priority[id_] = 0;
-    prior_item[0].push_back(id_);
-    ++id_;
+    prior_item[0].push_back(id_);    
+    return ++id_;
   };
 
   // Добавить все элементы диапазона [range_begin, range_end)
@@ -48,7 +48,7 @@ public:
     return data[id];
     // по идее, я же могу испортить данные, которые получил через get
     // тогда и другой контейнер тоже должен исключить этот id
-  }   
+  }
 
   // Увеличить приоритет объекта на 1
   void Promote(Id id){
@@ -56,22 +56,26 @@ public:
                               prior_item[priority[id]].end(),
                               id);
     prior_item[priority[id]+1].push_back(*id_to_promote);
-    prior_item[priority[id]].erase(id_to_promote);      
+    prior_item[priority[id]].erase(id_to_promote);
     ++priority[id];
-  }  
+  }
 
   // Получить объект с максимальным приоритетом и его приоритет
   pair<const T&, int> GetMax() const{
-    int id = prior_item[*prior_item.rbegin()].back();    
+    int last_key = prior_item.rbegin()->first;    
+    int id = prior_item.at(last_key).back();
     return make_pair(data[id], id);
-  }  
-  // тут по сложнее. мне надо найти объект с максимальным приоритет
-  // следовательно надо искать по приортитету, который у меня является
-  // значением. поэтому придется итерироваться по всему диапазон
-  // тут будет линейная сложность 10^6. но это не так уж и много
-
+  }
+  
   // Аналогично GetMax, но удаляет элемент из контейнера
-  pair<T, int> PopMax();
+  pair<T, int> PopMax(){
+    // int last_key = prior_item.rbegin()->first;
+    int id = prior_item[prior_item.rbegin()->first].back();
+    auto result = make_pair(move(data[id]), id);    
+    priority.erase(id);
+    prior_item[prior_item.rbegin()->first].pop_back();
+    return result;
+  }
 
 private:
   map<Id, T> data;
