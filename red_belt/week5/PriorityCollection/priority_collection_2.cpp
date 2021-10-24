@@ -29,7 +29,12 @@ public:
   // в диапазон [ids_begin, ...)
   template <typename ObjInputIt, typename IdOutputIt>
   void Add(ObjInputIt range_begin, ObjInputIt range_end,
-           IdOutputIt ids_begin);
+           IdOutputIt ids_begin){    
+    for (auto& it=range_begin; it< range_end; ++it){
+      data[id_] = move(*it);
+      ++id_;
+    }
+  }
 
   // Определить, принадлежит ли идентификатор какому-либо
   // хранящемуся в контейнере объекту
@@ -40,8 +45,6 @@ public:
       return false;
     }
   }
-  // из-за того, что я использую словарь, тут все элекментарно
-  // просто смотрим count по id
 
   // Получить объект по идентификатору
   const T& Get(Id id) const{
@@ -55,11 +58,11 @@ public:
     auto id_to_promote = find(prior_item[priority[id]].begin(),
                               prior_item[priority[id]].end(),
                               id);
-    prior_item[priority[id]+1].push_back(*id_to_promote);
-    prior_item[priority[id]].erase(id_to_promote);
+    cout << priority[id] << endl;
+    prior_item[priority[id]+1].push_back(move(*id_to_promote));        
     ++priority[id];
   }
-
+  
   // Получить объект с максимальным приоритетом и его приоритет
   pair<const T&, int> GetMax() const{
     int last_key = prior_item.rbegin()->first;    
@@ -76,17 +79,17 @@ public:
     prior_item[prior_item.rbegin()->first].pop_back();
     return result;
   }
-
+  void PrintPriority(){
+    for (auto& [key, value]:prior_item){
+      cout << key << ": " << value.size() << endl;
+    }
+  }
 private:
   map<Id, T> data;
   map<Id, int> priority;
   map<int, vector<Id>> prior_item;
   Id id_ = 0;
-  // Приватные поля и методы
-  // я ведь могу создать еще один контейнер в котором буду хранить приоритеты
-  // можно что-то типа map<int, vector<id>>, тогда я могу при увеличении приоритета
-  // добавить в вектор элемент по номеру id, конечно удаление объекта из вектора не очень
-  // оптимально, но не линейная сложность
+  // Приватные поля и методы  
 };
 
 
@@ -110,13 +113,16 @@ void TestNoCopy() {
     strings.Promote(red_id);
   }
   strings.Promote(yellow_id);
+  strings.PrintPriority();
   {
     const auto item = strings.PopMax();
     ASSERT_EQUAL(item.first, "red");
     ASSERT_EQUAL(item.second, 2);
   }
+  strings.PrintPriority();
   {
     const auto item = strings.PopMax();
+    cout << item.first << " " << item.second << endl;
     ASSERT_EQUAL(item.first, "yellow");
     ASSERT_EQUAL(item.second, 2);
   }
