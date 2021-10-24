@@ -21,7 +21,9 @@ public:
     data[id_] = move(object);
     priority[id_] = 0;
     prior_item[0].push_back(id_);    
-    return ++id_;
+    cout << "ID: "<< id_ << 
+    " Object: "<< data[id_] << " priority: " << priority[id_] << endl;
+    return id_++;
   };
 
   // Добавить все элементы диапазона [range_begin, range_end)
@@ -54,13 +56,19 @@ public:
   }
 
   // Увеличить приоритет объекта на 1
-  void Promote(Id id){
-    auto id_to_promote = find(prior_item[priority[id]].begin(),
-                              prior_item[priority[id]].end(),
-                              id);
-    cout << priority[id] << endl;
-    prior_item[priority[id]+1].push_back(move(*id_to_promote));        
+  void Promote(Id id){    
+    cout << id <<"'s priority: " << priority[id] << endl;
+    cout << "item: " << prior_item[priority[id]] << endl;   
+    auto prev_prior = priority[id];
     ++priority[id];
+    prior_item[priority[id]].push_back(id);
+    auto it = find(prior_item[prev_prior].begin(),
+                   prior_item[prev_prior].end(),
+                   id);
+    if (it != prior_item[prev_prior].end()){
+      prior_item[prev_prior].erase(it);
+    }
+    
   }
   
   // Получить объект с максимальным приоритетом и его приоритет
@@ -79,11 +87,13 @@ public:
     prior_item[prior_item.rbegin()->first].pop_back();
     return result;
   }
+  
   void PrintPriority(){
     for (auto& [key, value]:prior_item){
       cout << key << ": " << value.size() << endl;
     }
   }
+
 private:
   map<Id, T> data;
   map<Id, int> priority;
