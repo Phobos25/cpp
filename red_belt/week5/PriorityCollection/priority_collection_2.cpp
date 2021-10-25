@@ -14,7 +14,10 @@ template <typename T>
 class PriorityCollection {
 public:
   using Id = int;/* тип, используемый для идентификаторов */
-
+  
+  friend bool operator<(Item& lhs, Item& rhs){
+    return lhs.id < rhs.id;
+  }
   // Добавить объект с нулевым приоритетом
   // с помощью перемещения и вернуть его идентификатор
   Id Add(T object) {
@@ -61,10 +64,8 @@ public:
     cout << "item: " << prior_item[priority[id]] << endl;   
     auto prev_prior = priority[id];
     ++priority[id];
-    prior_item[priority[id]].push_back(id);
-    auto it = find(prior_item[prev_prior].begin(),
-                   prior_item[prev_prior].end(),
-                   id);
+    prior_item[priority[id]].insert(id);
+    auto it = prior_item.find(id);    
     if (it != prior_item[prev_prior].end()){
       prior_item[prev_prior].erase(it);
     }
@@ -95,13 +96,17 @@ public:
   }
 
 private:
+  struct Item{
+    Id id;
+    T data;    
+  }
   map<Id, T> data;
   map<Id, int> priority;
-  map<int, vector<Id>> prior_item;
+  map<int, set<Id>> prior_item;
   Id id_ = 0;
   // Приватные поля и методы  
-};
 
+};
 
 class StringNonCopyable : public string {
 public:
