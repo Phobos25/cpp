@@ -14,16 +14,13 @@ template <typename T>
 class PriorityCollection {
 public:
   using Id = int;/* тип, используемый для идентификаторов */
-  
-  friend bool operator<(Item& lhs, Item& rhs){
-    return lhs.id < rhs.id;
-  }
+
   // Добавить объект с нулевым приоритетом
   // с помощью перемещения и вернуть его идентификатор
   Id Add(T object) {
     data[id_] = move(object);
     priority[id_] = 0;
-    prior_item[0].push_back(id_);    
+    prior_item[0].insert(id_);    
     cout << "ID: "<< id_ << 
     " Object: "<< data[id_] << " priority: " << priority[id_] << endl;
     return id_++;
@@ -61,45 +58,55 @@ public:
   // Увеличить приоритет объекта на 1
   void Promote(Id id){    
     cout << id <<"'s priority: " << priority[id] << endl;
-    cout << "item: " << prior_item[priority[id]] << endl;   
+    cout << "item: " << prior_item[priority[id]] << endl << endl;   
     auto prev_prior = priority[id];
     ++priority[id];
     prior_item[priority[id]].insert(id);
-    auto it = prior_item.find(id);    
+    auto it = prior_item[prev_prior].find(id);    
     if (it != prior_item[prev_prior].end()){
       prior_item[prev_prior].erase(it);
     }
-    
+    CheckIfEmpty(prev_prior);
   }
   
   // Получить объект с максимальным приоритетом и его приоритет
   pair<const T&, int> GetMax() const{
     int last_key = prior_item.rbegin()->first;    
-    int id = prior_item.at(last_key).back();
+    int id = *prior_item.at(last_key).rbegin();
     return make_pair(data[id], id);
   }
   
   // Аналогично GetMax, но удаляет элемент из контейнера
-  pair<T, int> PopMax(){
-    // int last_key = prior_item.rbegin()->first;
-    int id = prior_item[prior_item.rbegin()->first].back();
-    auto result = make_pair(move(data[id]), id);    
-    priority.erase(id);
-    prior_item[prior_item.rbegin()->first].pop_back();
+  pair<T, int> PopMax(){    
+    auto id = prior_item[prior_item.rbegin()->first].rbegin();
+    Id id2 = *prior_item[prior_item.rbegin()->first].rbegin();
+    cout << "id2 ---" << id2 << ": " << data[*id] << endl;    
+    auto result = make_pair(move(data[*id]), move(priority[id2]));    
+   
+    int key = prior_item.rbegin()->first;
+    prior_item[key].erase(*id);
+    CheckIfEmpty(key);
+    cout << prior_item.size() << endl;
+    // тут выходит ошибка, потому что с максимальным приоритетом значений нет
+    // а ключ удалить ты забыл
+    // поэтому ключ с приоритетом 2 есть, а значений там нет
+    // тебе надо удалить ключ, если он пустой
     return result;
   }
   
+  void CheckIfEmpty(int priority){
+    if (prior_item[priority].empty()){
+      prior_item.erase(priority);
+    }
+  }
+
   void PrintPriority(){
     for (auto& [key, value]:prior_item){
       cout << key << ": " << value.size() << endl;
     }
   }
-
-private:
-  struct Item{
-    Id id;
-    T data;    
-  }
+  
+private:  
   map<Id, T> data;
   map<Id, int> priority;
   map<int, set<Id>> prior_item;
