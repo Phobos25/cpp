@@ -5,8 +5,8 @@
 #include <memory>
 #include <set>
 #include <utility>
-#include <vector>
 #include <map>
+#include <vector>
 
 using namespace std;
 
@@ -21,8 +21,8 @@ public:
     data[id_] = move(object);
     priority[id_] = 0;
     prior_item[0].insert(id_);    
-    cout << "ID: "<< id_ << 
-    " Object: "<< data[id_] << " priority: " << priority[id_] << endl;
+    // cout << "ID: "<< id_ << 
+    // " Object: "<< data[id_] << " priority: " << priority[id_] << endl;
     return id_++;
   };
 
@@ -31,10 +31,14 @@ public:
   // в диапазон [ids_begin, ...)
   template <typename ObjInputIt, typename IdOutputIt>
   void Add(ObjInputIt range_begin, ObjInputIt range_end,
-           IdOutputIt ids_begin){    
-    for (auto& it=range_begin; it< range_end; ++it){
-      data[id_] = move(*it);
-      ++id_;
+           IdOutputIt ids_begin){  
+    while (range_begin != range_end){      
+      *ids_begin = Add(move(*range_begin));
+      
+      cout << *ids_begin << endl;      
+      
+      ++range_begin;      
+      ++ids_begin;
     }
   }
 
@@ -50,15 +54,11 @@ public:
 
   // Получить объект по идентификатору
   const T& Get(Id id) const{
-    return data[id];
-    // по идее, я же могу испортить данные, которые получил через get
-    // тогда и другой контейнер тоже должен исключить этот id
+    return data[id];    
   }
 
   // Увеличить приоритет объекта на 1
-  void Promote(Id id){    
-    cout << id <<"'s priority: " << priority[id] << endl;
-    cout << "item: " << prior_item[priority[id]] << endl << endl;   
+  void Promote(Id id){            
     auto prev_prior = priority[id];
     ++priority[id];
     prior_item[priority[id]].insert(id);
@@ -79,18 +79,13 @@ public:
   // Аналогично GetMax, но удаляет элемент из контейнера
   pair<T, int> PopMax(){    
     auto id = prior_item[prior_item.rbegin()->first].rbegin();
-    Id id2 = *prior_item[prior_item.rbegin()->first].rbegin();
-    cout << "id2 ---" << id2 << ": " << data[*id] << endl;    
+    Id id2 = *prior_item[prior_item.rbegin()->first].rbegin();    
     auto result = make_pair(move(data[*id]), move(priority[id2]));    
    
     int key = prior_item.rbegin()->first;
     prior_item[key].erase(*id);
-    CheckIfEmpty(key);
-    cout << prior_item.size() << endl;
-    // тут выходит ошибка, потому что с максимальным приоритетом значений нет
-    // а ключ удалить ты забыл
-    // поэтому ключ с приоритетом 2 есть, а значений там нет
-    // тебе надо удалить ключ, если он пустой
+    CheckIfEmpty(key);    
+    
     return result;
   }
   
@@ -98,13 +93,7 @@ public:
     if (prior_item[priority].empty()){
       prior_item.erase(priority);
     }
-  }
-
-  void PrintPriority(){
-    for (auto& [key, value]:prior_item){
-      cout << key << ": " << value.size() << endl;
-    }
-  }
+  }  
   
 private:  
   map<Id, T> data;
@@ -129,22 +118,32 @@ void TestNoCopy() {
   const auto white_id = strings.Add("white");
   const auto yellow_id = strings.Add("yellow");
   const auto red_id = strings.Add("red");
+  vector<StringNonCopyable> colors;
+  colors.push_back("green");
+  colors.push_back("blue");
+  colors.push_back("orange");
+  colors.push_back("purple");
+  
+  vector<int> ids;
+  ids.push_back(white_id);
+  ids.push_back(yellow_id);
+  ids.push_back(red_id);
+  auto it = find(ids.begin(), ids.end(), red_id);
+  strings.Add(colors.begin(), colors.end(), it);
+  cout << ids.size() << endl;  
 
   strings.Promote(yellow_id);
   for (int i = 0; i < 2; ++i) {
     strings.Promote(red_id);
   }
-  strings.Promote(yellow_id);
-  strings.PrintPriority();
+  strings.Promote(yellow_id);  
   {
     const auto item = strings.PopMax();
     ASSERT_EQUAL(item.first, "red");
     ASSERT_EQUAL(item.second, 2);
-  }
-  strings.PrintPriority();
+  }  
   {
-    const auto item = strings.PopMax();
-    cout << item.first << " " << item.second << endl;
+    const auto item = strings.PopMax();    
     ASSERT_EQUAL(item.first, "yellow");
     ASSERT_EQUAL(item.second, 2);
   }
