@@ -1,17 +1,20 @@
+#include <algorithm>
 #include <iostream>
 #include <vector>
-#include <algorithm>
-
+#include <numeric>
+#include <future>
 using namespace std;
 
-int main() {
-    vector<int> v{1,2,3,4,5};
-    vector<int> vector_two;    
-    auto it = find(v.begin(), v.end(), 4);
-    cout << *it << endl;
-
-    v.erase(it);
-    vector_two.push_back(*it);
-    cout << vector_two[0] << endl;
-    
+int SumToVectors(const vector<int>& one, 
+        const vector<int>& two){
+    future <int> f = async([&one] {
+        return accumulate(begin(one), end(one),0);
+    });
+    int result = accumulate(begin(two), end(two),0);
+    return +result + f.get();
 }
+
+int main() {
+    cout << SumToVectors({1,1,1,1}, {3,3,3});
+}
+
