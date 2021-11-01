@@ -12,6 +12,8 @@ struct Stats {
 };
 
 Stats ExploreLine(const set<string>& key_words, const string& line) {
+  Stats stats;
+  
 }
 
 Stats ExploreKeyWordsSingleThread(
@@ -26,6 +28,12 @@ Stats ExploreKeyWordsSingleThread(
 
 Stats ExploreKeyWords(const set<string>& key_words, istream& input) {
   // Реализуйте эту функцию
+  string word;
+  Stats stats;
+  input >> word;
+  if (key_words.find(word) != key_words.end()){
+    ++stats.word_frequences[word];
+  }
 }
 
 void TestBasic() {

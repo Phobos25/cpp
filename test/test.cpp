@@ -3,18 +3,46 @@
 #include <vector>
 #include <numeric>
 #include <future>
+#include <sstream>
 using namespace std;
 
-int SumToVectors(const vector<int>& one, 
-        const vector<int>& two){
-    future <int> f = async([&one] {
-        return accumulate(begin(one), end(one),0);
-    });
-    int result = accumulate(begin(two), end(two),0);
-    return +result + f.get();
+void ReadLines(stringstream& ss){
+  vector<string> words; 
+  string line;
+  string line2;
+  getline(ss, line, '\n');  
+  stringstream linestream(line);
+  while (linestream){
+    string temp;
+    linestream >> temp;
+    words.push_back(temp);
+  }
+  for (const auto& w:words){
+    cout << w << " ";
+  }
+  cout << endl;
+  
+  getline(ss, line, '\n');
+  stringstream ls2(line);
+  while (ls2){
+    string temp;
+    ls2 >> temp;
+    words.push_back(temp);
+  }
+  for (const auto& w:words){
+    cout << w << " ";
+  }
+  cout << endl;
 }
 
 int main() {
-    cout << SumToVectors({1,1,1,1}, {3,3,3});
+
+    stringstream ss;
+    ss << "this new yangle service really rocks\n";    
+    ss << "It sucks when yangle isn't available\n";
+    ss << "10 reasons why yangle is the best IT company\n";
+    ss << "yangle rocks others suck\n";
+    ss << "Goondex really sucks, but yangle rocks. Use yangle\n";
+    ReadLines(ss);
 }
 

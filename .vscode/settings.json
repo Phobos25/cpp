@@ -66,6 +66,7 @@
         "forward_list": "cpp",
         "random": "cpp",
         "string_view": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "future": "cpp"
     }
 }
