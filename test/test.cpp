@@ -1,48 +1,43 @@
-#include <algorithm>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <numeric>
 #include <future>
-#include <sstream>
+#include <map>
+
 using namespace std;
 
-void ReadLines(stringstream& ss){
-  vector<string> words; 
-  string line;
-  string line2;
-  getline(ss, line, '\n');  
-  stringstream linestream(line);
-  while (linestream){
-    string temp;
-    linestream >> temp;
-    words.push_back(temp);
-  }
-  for (const auto& w:words){
-    cout << w << " ";
-  }
-  cout << endl;
-  
-  getline(ss, line, '\n');
-  stringstream ls2(line);
-  while (ls2){
-    string temp;
-    ls2 >> temp;
-    words.push_back(temp);
-  }
-  for (const auto& w:words){
-    cout << w << " ";
-  }
-  cout << endl;
+using mymap = map<int, int>;
+
+void printIt(const mymap& m) {
+    for (auto const &[k, v] : m)
+        std::cout << k << ":" << v << " ";
+    std::cout << std::endl;
 }
+
+// mymap operator += (mymap& lhs, mymap& rhs){
+// 	for (auto& [key, value]:rhs){
+// 		if (lhs.count(key) != 0){
+// 			lhs[key] += value;
+// 		} else {
+// 			lhs[key] = value;
+// 		}
+// 	}
+// 	return lhs;
+// }
 
 int main() {
-
-    stringstream ss;
-    ss << "this new yangle service really rocks\n";    
-    ss << "It sucks when yangle isn't available\n";
-    ss << "10 reasons why yangle is the best IT company\n";
-    ss << "yangle rocks others suck\n";
-    ss << "Goondex really sucks, but yangle rocks. Use yangle\n";
-    ReadLines(ss);
+    mymap foo{ {1, 11}, {2, 12}, {3, 13} };
+    mymap bar{ {2, 20}, {3, 30}, {4, 40} };
+    printIt(foo);
+    printIt(bar);    
+    for (auto& [key, value]:bar){
+    	if (foo.count(key) != 0){
+    		foo[key] += value;
+    	} else {
+    		foo[key] = value;
+    	}
+    }
+    printIt(foo);
+    return 0;
 }
-
