@@ -20,9 +20,7 @@ public:
   Id Add(T object) {
     data[id_] = move(object);
     priority[id_] = 0;
-    prior_item[0].insert(id_);    
-    // cout << "ID: "<< id_ << 
-    // " Object: "<< data[id_] << " priority: " << priority[id_] << endl;
+    prior_item[0].insert(id_);       
     return id_++;
   };
 
