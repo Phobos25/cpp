@@ -1,6 +1,7 @@
 #include "test_runner.h"
 //#include "profile.h"
 
+#include <iostream>
 #include <map>
 #include <set>
 #include <vector>
@@ -32,9 +33,9 @@ Stats ExploreLine(const set<string>& key_words, const string& line) {
     if (key_words.find(word) != key_words.end()){
       ++stats.word_frequences[word];
     }
-    cout << word << " ";
+    // cout << word << " ";
   }
-  cout << endl;
+  // cout << endl;
   return stats;
 }
 
@@ -80,23 +81,23 @@ void TestBasic() {
   ASSERT_EQUAL(stats.word_frequences, expected);
 }
 
-void MyTest(){
-  const set<string> key_words = {"yangle", "rocks", "sucks", "all"};
+// void MyTest(){
+//   const set<string> key_words = {"yangle", "rocks", "sucks", "all"};
 
-  stringstream ss;
-  ss << "this new yangle service really rocks\n";
-  ss << "It sucks when yangle isn't available\n";
-  ss << "10 reasons why yangle is the best IT company\n";
-  ss << "yangle rocks others suck\n";
-  ss << "Goondex really sucks, but yangle rocks. Use yangle\n";
-  const auto stats = ExploreKeyWords(key_words, ss);
-  cout << "yangle: " << stats.word_frequences.at("yangle") << endl;
-  cout << "rocks: "  << stats.word_frequences.at("rocks") << endl;
-  cout << "sucks: "  << stats.word_frequences.at("sucks") << endl;
-}
+//   stringstream ss;
+//   ss << "this new yangle service really rocks\n";
+//   ss << "It sucks when yangle isn't available\n";
+//   ss << "10 reasons why yangle is the best IT company\n";
+//   ss << "yangle rocks others suck\n";
+//   ss << "Goondex really sucks, but yangle rocks. Use yangle\n";
+//   const auto stats = ExploreKeyWords(key_words, ss);
+//   cout << "yangle: " << stats.word_frequences.at("yangle") << endl;
+//   cout << "rocks: "  << stats.word_frequences.at("rocks") << endl;
+//   cout << "sucks: "  << stats.word_frequences.at("sucks") << endl;
+// }
 
 int main() {
-//  TestRunner tr;
-//  RUN_TEST(tr, TestBasic);
-  MyTest();
+  TestRunner tr;
+  RUN_TEST(tr, TestBasic);
+  // MyTest();
 }
