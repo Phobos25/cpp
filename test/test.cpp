@@ -1,43 +1,59 @@
-#include <iostream>
-#include <algorithm>
-#include <vector>
 #include <numeric>
+#include <vector>
+#include <string>
 #include <future>
-#include <map>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <iostream>
 
 using namespace std;
 
-using mymap = map<int, int>;
 
-void printIt(const mymap& m) {
-    for (auto const &[k, v] : m)
-        std::cout << k << ":" << v << " ";
-    std::cout << std::endl;
+template <typename T>
+class Synchronized {
+public:
+  explicit Synchronized(T initial = T())
+          : value(move(initial))
+  {
+  }
+
+  struct Access {
+    T& ref_to_value;    
+    lock_guard<mutex> guard;    
+  };
+
+  Access GetAccess(){  
+    return {value, lock_guard(m)};
+  }
+
+private:
+  T value;
+  mutex m;
+};
+
+void TestConcurrentUpdate() {
+  Synchronized<string> common_string;
+
+  const size_t add_count = 50000;
+  auto updater = [&common_string, add_count] {
+    for (size_t i = 0; i < add_count; ++i) {
+      auto access = common_string.GetAccess();
+      access.ref_to_value += 'a';
+    }
+  };
+
+  auto f1 = async(updater);
+  auto f2 = async(updater);
+
+  f1.get();
+  f2.get();
+  
+  cout << common_string.GetAccess().ref_to_value.size() << endl;
 }
 
-// mymap operator += (mymap& lhs, mymap& rhs){
-// 	for (auto& [key, value]:rhs){
-// 		if (lhs.count(key) != 0){
-// 			lhs[key] += value;
-// 		} else {
-// 			lhs[key] = value;
-// 		}
-// 	}
-// 	return lhs;
-// }
-
 int main() {
-    mymap foo{ {1, 11}, {2, 12}, {3, 13} };
-    mymap bar{ {2, 20}, {3, 30}, {4, 40} };
-    printIt(foo);
-    printIt(bar);    
-    for (auto& [key, value]:bar){
-    	if (foo.count(key) != 0){
-    		foo[key] += value;
-    	} else {
-    		foo[key] = value;
-    	}
-    }
-    printIt(foo);
-    return 0;
+  Synchronized<string> common_string;
+  TestConcurrentUpdate();
+  return 0;
 }
