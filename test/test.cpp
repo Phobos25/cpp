@@ -9,51 +9,16 @@
 
 using namespace std;
 
-
-template <typename T>
-class Synchronized {
-public:
-  explicit Synchronized(T initial = T())
-          : value(move(initial))
-  {
-  }
-
-  struct Access {
-    T& ref_to_value;    
-    lock_guard<mutex> guard;    
-  };
-
-  Access GetAccess(){  
-    return {value, lock_guard(m)};
-  }
-
-private:
-  T value;
-  mutex m;
-};
-
-void TestConcurrentUpdate() {
-  Synchronized<string> common_string;
-
-  const size_t add_count = 50000;
-  auto updater = [&common_string, add_count] {
-    for (size_t i = 0; i < add_count; ++i) {
-      auto access = common_string.GetAccess();
-      access.ref_to_value += 'a';
-    }
-  };
-
-  auto f1 = async(updater);
-  auto f2 = async(updater);
-
-  f1.get();
-  f2.get();
-  
-  cout << common_string.GetAccess().ref_to_value.size() << endl;
-}
-
 int main() {
-  Synchronized<string> common_string;
-  TestConcurrentUpdate();
+  int key = 5000;
+  vector <int> data;
+  data.push_back(1);
+  data.push_back(2);
+
+  cout << "5999 dividded by 2 " << key % data.size() << endl;
+  data.push_back(3);
+  cout << "5000 dividded by 3 " << key % data.size() << endl;
+  
+  cout << "5000 dividded by 6 " << key % 6 << endl;
   return 0;
 }
