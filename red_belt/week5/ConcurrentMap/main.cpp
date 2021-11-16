@@ -16,8 +16,13 @@ public:
   static_assert(is_integral_v<K>, "ConcurrentMap supports only integer keys");
 
   struct Access {
+    Access(const K& key, pair<mutex, map<K, V>>& bucket)
+          : ref_to_value(bucket.second[key])
+          , guard(bucket.first){
+
+    }
     V& ref_to_value;
-    lock_guard<mutex> guard;  
+    lock_guard<mutex> guard;      
   };
 
   explicit ConcurrentMap(size_t bucket_count)
@@ -25,13 +30,17 @@ public:
   }
 
   Access operator[](const K& key){ 
-      auto id = key % data.size();      
-      return {data[id].second[key], data[id].first}      
+      auto id = key % data.size();             
+      return {key, data[id]};
   }  
 
   map<K, V> BuildOrdinaryMap(){
-    map <K, V> result;
-    
+    map <K, V> result;    
+    for (auto& [mut, container]: data){
+      lock_guard<mutex> guard{mut};
+      result.insert(container.begin(), container.end());      
+    }
+    return result;
   }
 
 private:
