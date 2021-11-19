@@ -17,12 +17,11 @@ public:
 
   struct Access {
     Access(const K& key, pair<mutex, map<K, V>>& bucket)
-          : ref_to_value(bucket.second[key])
-          , guard(bucket.first){
-
-    }
-    V& ref_to_value;
+          : guard(bucket.first)          
+          ,ref_to_value(bucket.second[key]){
+    }    
     lock_guard<mutex> guard;      
+    V& ref_to_value;
   };
 
   explicit ConcurrentMap(size_t bucket_count)
@@ -82,56 +81,56 @@ void TestConcurrentUpdate() {
   }
 }
 
-// void TestReadAndWrite() {
-//   ConcurrentMap<size_t, string> cm(5);
+void TestReadAndWrite() {
+  ConcurrentMap<size_t, string> cm(5);
 
-//   auto updater = [&cm] {
-//     for (size_t i = 0; i < 50000; ++i) {
-//       cm[i].ref_to_value += 'a';
-//     }
-//   };
-//   auto reader = [&cm] {
-//     vector<string> result(50000);
-//     for (size_t i = 0; i < result.size(); ++i) {
-//       result[i] = cm[i].ref_to_value;
-//     }
-//     return result;
-//   };
+  auto updater = [&cm] {
+    for (size_t i = 0; i < 50000; ++i) {
+      cm[i].ref_to_value += 'a';
+    }
+  };
+  auto reader = [&cm] {
+    vector<string> result(50000);
+    for (size_t i = 0; i < result.size(); ++i) {
+      result[i] = cm[i].ref_to_value;
+    }
+    return result;
+  };
 
-//   auto u1 = async(updater);
-//   auto r1 = async(reader);
-//   auto u2 = async(updater);
-//   auto r2 = async(reader);
+  auto u1 = async(updater);
+  auto r1 = async(reader);
+  auto u2 = async(updater);
+  auto r2 = async(reader);
 
-//   u1.get();
-//   u2.get();
+  u1.get();
+  u2.get();
 
-//   for (auto f : {&r1, &r2}) {
-//     auto result = f->get();
-//     ASSERT(all_of(result.begin(), result.end(), [](const string& s) {
-//       return s.empty() || s == "a" || s == "aa";
-//     }));
-//   }
-// }
+  for (auto f : {&r1, &r2}) {
+    auto result = f->get();
+    ASSERT(all_of(result.begin(), result.end(), [](const string& s) {
+      return s.empty() || s == "a" || s == "aa";
+    }));
+  }
+}
 
-// void TestSpeedup() {
-//   {
-//     ConcurrentMap<int, int> single_lock(1);
+void TestSpeedup() {
+  {
+    ConcurrentMap<int, int> single_lock(1);
 
-//     LOG_DURATION("Single lock");
-//     RunConcurrentUpdates(single_lock, 4, 50000);
-//   }
-//   {
-//     ConcurrentMap<int, int> many_locks(100);
+    LOG_DURATION("Single lock");
+    RunConcurrentUpdates(single_lock, 4, 50000);
+  }
+  {
+    ConcurrentMap<int, int> many_locks(100);
 
-//     LOG_DURATION("100 locks");
-//     RunConcurrentUpdates(many_locks, 4, 50000);
-//   }
-// }
+    LOG_DURATION("100 locks");
+    RunConcurrentUpdates(many_locks, 4, 50000);
+  }
+}
 
 int main() {
   TestRunner tr;
   RUN_TEST(tr, TestConcurrentUpdate);
-  // RUN_TEST(tr, TestReadAndWrite);
-  // RUN_TEST(tr, TestSpeedup);
+  RUN_TEST(tr, TestReadAndWrite);
+  RUN_TEST(tr, TestSpeedup);
 }
