@@ -1,24 +1,64 @@
-#include <numeric>
+#include "test_runner.h"
+#include "profile.h"
+
+#include <algorithm>
+#include <iterator>
+#include <map>
 #include <vector>
 #include <string>
-#include <future>
-#include <mutex>
-#include <queue>
+#include <sstream>
+#include <fstream>
+#include <random>
 #include <thread>
-#include <iostream>
 
-using namespace std;
+void sort_by_map(){
+    map<string, string> veggy_map = {{"1", "Yam",},
+                                     {"2", "Pumpkin",},
+                                     {"3", "Ginger",},
+                                     {"4", "Melon",},
+                                     {"5", "Beetroot",},
+                                     {"6", "Spinach",}};
+
+
+
+    map<string, string> veggy_map2;
+
+    for (const auto & [key, value] : veggy_map) {
+        veggy_map2.emplace(value, key);
+    }  
+}
+
+void sort_by_vector(){
+    map<string, string> veggy_map = {{"1", "Yam",},
+                                     {"2", "Pumpkin",},
+                                     {"3", "Ginger",},
+                                     {"4", "Melon",},
+                                     {"5", "Beetroot",},
+                                     {"6", "Spinach",}};
+
+    vector<std::pair<string, string> > arr;
+    for (const auto &item : veggy_map) {
+        arr.emplace_back(item);
+    }
+
+    std::sort(arr.begin(), arr.end(),
+              [] (const auto x, const auto y) {return x.second < y.second;});
+
+}
 
 int main() {
-  int key = 5000;
-  vector <int> data;
-  data.push_back(1);
-  data.push_back(2);
+    
+    {LOG_DURATION("sort by map");
+        for (int i=0; i<10'000'000; ++i){
+            sort_by_map();
+        }
+    }
 
-  cout << "5999 dividded by 2 " << key % data.size() << endl;
-  data.push_back(3);
-  cout << "5000 dividded by 3 " << key % data.size() << endl;
-  
-  cout << "5000 dividded by 6 " << key % 6 << endl;
-  return 0;
+    {LOG_DURATION("sort by vector");
+        for (int i=0; i<10'000'000; ++i){
+            sort_by_vector();
+        }
+    }
+    
+    return 0;
 }

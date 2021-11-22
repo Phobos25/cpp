@@ -6,7 +6,7 @@
 #include <sstream>
 #include <iostream>
 
-vector<string> SplitIntoWords(const string& line) {
+vector<string> SplitIntoWords(const string& line) {  
   istringstream words_input(line);
   return {istream_iterator<string>(words_input), istream_iterator<string>()};
 }
@@ -29,19 +29,19 @@ void SearchServer::AddQueriesStream(
   istream& query_input, ostream& search_results_output
 ) {
   for (string current_query; getline(query_input, current_query); ) {
-    const auto words = SplitIntoWords(current_query);
+    const auto words = SplitIntoWords(current_query); // O(1)
 
-    map<size_t, size_t> docid_count;
-    for (const auto& word : words) {
-      for (const size_t docid : index.Lookup(word)) {
+    map<size_t, size_t> docid_count; 
+    for (const auto& word : words) { // O(m)
+      for (const size_t docid : index.Lookup(word)) {// O(n)
         docid_count[docid]++;
       }
     }
-
+    // O(n)
     vector<pair<size_t, size_t>> search_results(
       docid_count.begin(), docid_count.end()
-    );
-    sort(
+    );    
+    sort(    // O(nlog(n))
       begin(search_results),
       end(search_results),
       [](pair<size_t, size_t> lhs, pair<size_t, size_t> rhs) {
@@ -53,7 +53,7 @@ void SearchServer::AddQueriesStream(
       }
     );
 
-    search_results_output << current_query << ':';
+    search_results_output << current_query << ':'; //O(5)
     for (auto [docid, hitcount] : Head(search_results, 5)) {
       search_results_output << " {"
         << "docid: " << docid << ", "

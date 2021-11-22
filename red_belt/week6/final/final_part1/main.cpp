@@ -1,6 +1,7 @@
 #include "search_server.h"
 #include "parse.h"
 #include "test_runner.h"
+#include "profile.h"
 
 #include <algorithm>
 #include <iterator>
@@ -201,10 +202,19 @@ void TestBasicSearch() {
 }
 
 int main() {
+  LOG_DURATION ("Total")
   TestRunner tr;
-  RUN_TEST(tr, TestSerpFormat);
-  RUN_TEST(tr, TestTop5);
-  RUN_TEST(tr, TestHitcount);
-  RUN_TEST(tr, TestRanking);
-  RUN_TEST(tr, TestBasicSearch);
+  for (int i=0; i<10'000; ++i){
+    TestSerpFormat();
+    TestTop5();
+    TestHitcount();
+    TestRanking();
+    TestBasicSearch();
+  }
+
+  // RUN_TEST(tr, TestSerpFormat);
+  // RUN_TEST(tr, TestTop5);
+  // RUN_TEST(tr, TestHitcount);
+  // RUN_TEST(tr, TestRanking);
+  // RUN_TEST(tr, TestBasicSearch);
 }
