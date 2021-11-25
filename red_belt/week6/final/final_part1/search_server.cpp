@@ -7,6 +7,12 @@
 #include <iostream>
 
 vector<string> SplitIntoWords(const string& line) {  
+  // может тут надо разделять? раз это самый медленный?
+  // как жто можно сделать? 
+  // как это работает? он берет один длинный стринг и делит его на 
+  // отдельные слова и добавляет в вектор
+  // щначит саму функцию надо запускать параллельно
+  // и хранить большой вектор
   istringstream words_input(line);
   return {istream_iterator<string>(words_input), istream_iterator<string>()};
 }
@@ -20,7 +26,13 @@ void SearchServer::UpdateDocumentBase(istream& document_input) {
 
   for (string current_document; getline(document_input, current_document); ) {
     new_index.Add(move(current_document));
+    // auto fut1 = SplitIntoWords
+    // auto fut2 = SplitIntoWords
+    // auto fut3 = SplitIntoWords
+    // auto fut4 = SplitIntoWords
   }
+  
+  // vector<string> all_words = fut1 + fut2 + fut3; 
 
   index = move(new_index);
 }

@@ -200,18 +200,49 @@ void TestBasicSearch() {
   };
   TestFunctionality(docs, queries, expected);
 }
+vector<string> SplitIntoWords1(const string& line) {  
+  istringstream words_input(line);
+  return {istream_iterator<string>(words_input), istream_iterator<string>()};
+}
+
+void myTest(){ 
+    vector<string> docs = {
+    "milk a",
+    "milk b",
+    "milk c",
+    "milk d",
+    "milk e",
+    "milk f",
+    "milk g",
+    "water a",
+    "water b",
+    "fire and earth"
+  };
+
+  const vector<string> queries = {"milk", "water", "rock"};
+
+    istringstream docs_input(Join('\n', docs));
+    istringstream queries_input(Join('\n', queries));
+
+    SearchServer srv;
+    { LOG_DURATION("update document base");
+      for (int i = 0; i<10'000'000; ++i){
+        srv.UpdateDocumentBase(docs_input);
+      }      
+    }    
+}
 
 int main() {
   LOG_DURATION ("Total")
   TestRunner tr;
-  for (int i=0; i<10'000; ++i){
-    TestSerpFormat();
-    TestTop5();
-    TestHitcount();
-    TestRanking();
-    TestBasicSearch();
-  }
-
+  // for (int i=0; i<10'000; ++i){
+  //   TestSerpFormat();
+  //   TestTop5();
+  //   TestHitcount();
+  //   TestRanking();
+  //   TestBasicSearch();
+  // }
+  myTest();
   // RUN_TEST(tr, TestSerpFormat);
   // RUN_TEST(tr, TestTop5);
   // RUN_TEST(tr, TestHitcount);
