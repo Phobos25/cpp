@@ -205,44 +205,51 @@ vector<string> SplitIntoWords1(const string& line) {
   return {istream_iterator<string>(words_input), istream_iterator<string>()};
 }
 
-void myTest(){ 
-    vector<string> docs = {
-    "milk a",
-    "milk b",
-    "milk c",
-    "milk d",
-    "milk e",
-    "milk f",
-    "milk g",
-    "water a",
-    "water b",
-    "fire and earth"
+void MyTest(){
+  const vector<string> docs = {
+    "london is the capital of great britain",
+    "paris is the capital of france",
+    "berlin is the capital of germany",
+    "rome is the capital of italy",
+    "madrid is the capital of spain",
+    "lisboa is the capital of portugal",
+    "bern is the capital of switzerland",
+    "moscow is the capital of russia",
+    "kiev is the capital of ukraine",
+    "minsk is the capital of belarus",
+    "astana is the capital of kazakhstan",
+    "beijing is the capital of china",
+    "tokyo is the capital of japan",
+    "bangkok is the capital of thailand",
+    "welcome to moscow the capital of russia the third rome",
+    "amsterdam is the capital of netherlands",
+    "helsinki is the capital of finland",
+    "oslo is the capital of norway",
+    "stockgolm is the capital of sweden",
+    "riga is the capital of latvia",
+    "tallin is the capital of estonia",
+    "warsaw is the capital of poland",
   };
-
-  const vector<string> queries = {"milk", "water", "rock"};
-
-    istringstream docs_input(Join('\n', docs));
-    istringstream queries_input(Join('\n', queries));
-
-    SearchServer srv;
-    { LOG_DURATION("update document base");
-      for (int i = 0; i<10'000'000; ++i){
-        srv.UpdateDocumentBase(docs_input);
-      }      
-    }    
+  const vector<string> queries = {"moscow is the capital of russia"};
+  istringstream docs_input(Join('\n', docs));
+  istringstream queries_input(Join('\n', queries));
+  SearchServer srv;
+  srv.UpdateDocumentBase(docs_input);
+  ostringstream queries_output;
+  srv.AddQueriesStream(queries_input, queries_output);
 }
 
 int main() {
   LOG_DURATION ("Total")
   TestRunner tr;
+  MyTest();
   // for (int i=0; i<10'000; ++i){
   //   TestSerpFormat();
   //   TestTop5();
   //   TestHitcount();
   //   TestRanking();
   //   TestBasicSearch();
-  // }
-  myTest();
+  // }  
   // RUN_TEST(tr, TestSerpFormat);
   // RUN_TEST(tr, TestTop5);
   // RUN_TEST(tr, TestHitcount);
