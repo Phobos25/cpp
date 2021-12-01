@@ -29,7 +29,7 @@ public:
   explicit SearchServer(istream& document_input);
   void UpdateDocumentBase(istream& document_input);
   void AddQueriesStream(istream& query_input, ostream& search_results_output);
-
+  ostringstream QuerySingleStream(string& current_query);
 private:
   InvertedIndex index;
 };

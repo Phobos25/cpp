@@ -7,6 +7,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <numeric>
 
 vector<string> SplitIntoWords(const string& line) {  
   istringstream words_input(line);
@@ -27,88 +28,48 @@ void SearchServer::UpdateDocumentBase(istream& document_input) {
   index = move(new_index);
 }
 
+ostringstream SearchServer::QuerySingleStream(
+    string &current_query){  
+  
+  ostringstream search_results_output;
+  const auto words = SplitIntoWords(current_query);
+  vector<size_t> docid_count(50000, 0);       
+  for (const auto& word : words) { // O(m)
+    for (const size_t docid : index.Lookup(word)) {// O(n)
+      docid_count[docid]++;
+    }
+  }    
+            
+  // O(n)    
+  vector<size_t> indices(docid_count.size());
+  iota(indices.begin(), indices.end(), 0);
+  partial_sort(indices.begin(), indices.begin() + 5, indices.end(),
+        [&](int64_t lhs, int64_t rhs) {
+            return make_pair(docid_count[lhs], -lhs) > make_pair(docid_count[rhs], -rhs);
+        });  
+  
+  vector<pair<size_t, size_t>> search_results;
+  for (auto& i:indices){
+    search_results.push_back(make_pair(i, docid_count[i]));
+  }   
+      
+  search_results_output << current_query << ':'; //O(5)
+  for (auto [docid, hitcount] : Head(search_results, 5)) {
+    if (hitcount != 0){
+      search_results_output << " {"
+        << "docid: " << docid << ", "
+        << "hitcount: " << hitcount << '}';
+    }      
+  }
+  search_results_output << endl;
+  return search_results_output;
+}
+
 void SearchServer::AddQueriesStream(
   istream& query_input, ostream& search_results_output
 ) {  
   for (string current_query; getline(query_input, current_query); ) {
-    // { LOG_DURATION("Split into words: ");
-    //   for (int i=0; i<10'000; ++i){
-    //     const auto words = SplitIntoWords(current_query); // O(1)      
-    //   }      
-    // }    
-    const auto words = SplitIntoWords(current_query); // O(1)
-    // { LOG_DURATION("docid count: ");
-    //   for (int i=0; i<10'000; ++i){
-    //     // map<size_t, size_t> docid_count; 
-    //     for (const auto& word : words) { // O(m)
-    //       for (const size_t docid : index.Lookup(word)) {// O(n)
-    //         docid_count[docid]++;
-    //       }
-    //     }  
-    //   }
-    // }
-    // map <size_t, size_t> docid_count;     
-    vector<size_t> docid_count(50000, 0);       
-    for (const auto& word : words) { // O(m)
-      for (const size_t docid : index.Lookup(word)) {// O(n)
-        docid_count[docid]++;
-      }
-    }    
-    
-    // { LOG_DURATION("sort: ");
-    //   for (int i=0; i<10'000; ++i){
-    //     vector<pair<size_t, size_t>> search_results(
-    //       docid_count.begin(), docid_count.end()
-    //     );    
-    //     sort(    // O(nlog(n))
-    //       begin(search_results),
-    //       end(search_results),
-    //       [](pair<size_t, size_t> lhs, pair<size_t, size_t> rhs) {
-    //         int64_t lhs_docid = lhs.first;
-    //         auto lhs_hit_count = lhs.second;
-    //         int64_t rhs_docid = rhs.first;
-    //         auto rhs_hit_count = rhs.second;
-    //         return make_pair(lhs_hit_count, -lhs_docid) > make_pair(rhs_hit_count, -rhs_docid);
-    //       }
-    //     );    
-    //       }
-    // }
-    
-    // O(n)
-    vector<pair<size_t, size_t>> search_results(
-      docid_count.begin(), docid_count.end()
-    );    
-    sort(    // O(nlog(n))
-      begin(search_results),
-      end(search_results),
-      [](pair<size_t, size_t> lhs, pair<size_t, size_t> rhs) {
-        int64_t lhs_docid = lhs.first;
-        auto lhs_hit_count = lhs.second;
-        int64_t rhs_docid = rhs.first;
-        auto rhs_hit_count = rhs.second;
-        return make_pair(lhs_hit_count, -lhs_docid) > make_pair(rhs_hit_count, -rhs_docid);
-      }
-    );
-
-    // { LOG_DURATION("prepare result: ");
-    //   for (int i=0; i<10'000; ++i){
-    //     search_results_output << current_query << ':'; //O(5)
-    //     for (auto [docid, hitcount] : Head(search_results, 5)) {
-    //       search_results_output << " {"
-    //         << "docid: " << docid << ", "
-    //         << "hitcount: " << hitcount << '}';
-    //     }
-    //     search_results_output << endl;
-    //   }
-    // }
-
-    search_results_output << current_query << ':'; //O(5)
-    for (auto [docid, hitcount] : Head(search_results, 5)) {
-      search_results_output << " {"
-        << "docid: " << docid << ", "
-        << "hitcount: " << hitcount << '}';
-    }
-    search_results_output << endl;
+        
   }
 }
 
