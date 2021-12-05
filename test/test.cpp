@@ -30,13 +30,11 @@ string SingleThread(string& current_query){
 }
 
 int main() {    
-  vector<string> queries = {"london", "the"};
+  vector<string> queries = {"london", "the", "best"};
   vector<future<string>> futures;
   for (string& query:queries){
     futures.push_back(async(SingleThread, ref(query)));
   }
-//  futures[0]  = async(SingleThread, ref(queries[0]));
-//  futures[1]  = async(SingleThread, ref(queries[1]));
 
   for (auto& fut:futures){
     cout << fut.get() << endl;
