@@ -1,6 +1,9 @@
 #pragma once
 
+#include "synchronized.h"
+
 #include <istream>
+#include <future>
 #include <ostream>
 #include <set>
 #include <list>
@@ -18,6 +21,10 @@ public:
     return docs[id];
   }
 
+  const vector<string>& GetDocuments() const {
+    return docs;
+  }
+
 private:
   map<string, list<size_t>> index;
   vector<string> docs;
@@ -26,10 +33,11 @@ private:
 class SearchServer {
 public:
   SearchServer() = default;
-  explicit SearchServer(istream& document_input);
+  explicit SearchServer(istream& document_input);                      
   void UpdateDocumentBase(istream& document_input);
-  void AddQueriesStream(istream& query_input, ostream& search_results_output);
-  ostringstream QuerySingleStream(string& current_query);
-private:
-  InvertedIndex index;
+  void AddQueriesStream(istream& query_input, ostream& search_results_output);  
+  
+private:  
+  Synchronized<InvertedIndex> index;
+  vector<future<void>> async_tasks;
 };

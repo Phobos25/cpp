@@ -1,7 +1,6 @@
 #include "search_server.h"
 #include "parse.h"
 #include "test_runner.h"
-#include "profile.h"
 
 #include <algorithm>
 #include <iterator>
@@ -22,10 +21,11 @@ void TestFunctionality(
   istringstream docs_input(Join('\n', docs));
   istringstream queries_input(Join('\n', queries));
 
-  SearchServer srv;
-  srv.UpdateDocumentBase(docs_input);
   ostringstream queries_output;
-  srv.AddQueriesStream(queries_input, queries_output);
+  {
+    SearchServer srv(docs_input);
+    srv.AddQueriesStream(queries_input, queries_output);
+  }
 
   const string result = queries_output.str();
   const auto lines = SplitBy(Strip(result), '\n');
@@ -200,47 +200,8 @@ void TestBasicSearch() {
   };
   TestFunctionality(docs, queries, expected);
 }
-vector<string> SplitIntoWords1(const string& line) {  
-  istringstream words_input(line);
-  return {istream_iterator<string>(words_input), istream_iterator<string>()};
-}
-
-void MyTest(){
-  const vector<string> docs = {
-    "london is the capital of great britain",
-    "paris is the capital of france",
-    "berlin is the capital of germany",
-    "rome is the capital of italy",
-    "madrid is the capital of spain",
-    "lisboa is the capital of portugal",
-    "bern is the capital of switzerland",
-    "moscow is the capital of russia",
-    "kiev is the capital of ukraine",
-    "minsk is the capital of belarus",
-    "astana is the capital of kazakhstan",
-    "beijing is the capital of china",
-    "tokyo is the capital of japan",
-    "bangkok is the capital of thailand",
-    "welcome to moscow the capital of russia the third rome",
-    "amsterdam is the capital of netherlands",
-    "helsinki is the capital of finland",
-    "oslo is the capital of norway",
-    "stockgolm is the capital of sweden",
-    "riga is the capital of latvia",
-    "tallin is the capital of estonia",
-    "warsaw is the capital of poland",
-  };
-  const vector<string> queries = {"moscow is the capital of russia"};
-  istringstream docs_input(Join('\n', docs));
-  istringstream queries_input(Join('\n', queries));
-  SearchServer srv;
-  srv.UpdateDocumentBase(docs_input);
-  ostringstream queries_output;
-  srv.AddQueriesStream(queries_input, queries_output);
-}
 
 int main() {
-  LOG_DURATION ("Total")
   TestRunner tr;
   RUN_TEST(tr, TestSerpFormat);
   RUN_TEST(tr, TestTop5);
