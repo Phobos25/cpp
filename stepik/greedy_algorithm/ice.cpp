@@ -37,6 +37,7 @@ int main() {
     if (ice.count(word) != 0){
       ice.clear();
       ++s; // если название есть, значит это другой производитель
+      ice.insert(word);
     } else{
       ice.insert(word);
     }
