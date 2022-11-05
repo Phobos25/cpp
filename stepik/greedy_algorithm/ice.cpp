@@ -28,20 +28,18 @@ int main() {
   fstream input("ice_test.in");
   int n;
   input >> n;
-  int s = 0; // кол-во производителей
+  int s = 1; // кол-во производителей
   set<string> ice;
 
   for (int i=0; i<n; ++i){
     string word;
     input >> word;
     if (ice.count(word) != 0){
+      ice.clear();
       ++s; // если название есть, значит это другой производитель
     } else{
       ice.insert(word);
     }
-  }
-  for (auto i:ice){
-    cout << i << endl;
   }
   cout << s << endl;
   return 0;
