@@ -18,20 +18,30 @@ int main() {
     vector<vector<int>> d(n+1, vector<int>(m+1));
     vector<int> a{1, 2, 3, 4};    
     vector<int> b{3, 1, 4, 5, 3, 1, 2, 4};
-
+    vector<int> subset;
     for (size_t i = 0; i <= n; i++){
         d[i][0] = 0;
     }
     for (size_t j = 0; j <= m; j++){
         d[0][j] = 0;
     }
-    
+
     for (size_t i = 1; i <= n; i++){
-        for (size_t j = 1; j <= m; j++){
-           d[i][j] = max(d[i-1][j], d[i][j-1]);
-           if (a[i-1] == b[j-1]) d[i][j] = max(d[i][j], d[i-1][j-1]+1);
+        for (size_t j = 1; j <= m; j++){           
+           if (a[i-1] == b[j-1]){
+             d[i][j] = max(d[i][j], d[i-1][j-1]+1);
+           } else{
+             d[i][j] = max(d[i-1][j], d[i][j-1]);   
+           }
         }        
     }
-    cout << d[n][m] << endl;
+    cout << d[n][m] << endl;  
+    for (size_t i = 1; i <= n; i++){
+        for (size_t j = 1; j <= m; j++){
+            cout << d[i][j] << ' ';
+        }
+        cout << endl;
+    }
+    
     return 0;
 }
