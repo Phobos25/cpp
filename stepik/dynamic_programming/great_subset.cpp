@@ -18,7 +18,6 @@ int main() {
     vector<vector<int>> d(n+1, vector<int>(m+1));
     vector<int> a{1, 2, 3, 4};    
     vector<int> b{3, 1, 4, 5, 3, 1, 2, 4};
-    vector<int> subset;
     for (size_t i = 0; i <= n; i++){
         d[i][0] = 0;
     }
@@ -36,12 +35,6 @@ int main() {
         }        
     }
     cout << d[n][m] << endl;  
-    for (size_t i = 1; i <= n; i++){
-        for (size_t j = 1; j <= m; j++){
-            cout << d[i][j] << ' ';
-        }
-        cout << endl;
-    }
     
     return 0;
 }
