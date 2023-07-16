@@ -10,4 +10,4 @@
 
 5) iterate through the table
 
-6) fill further position based onthe current position
+6) fill further position based on the current position
